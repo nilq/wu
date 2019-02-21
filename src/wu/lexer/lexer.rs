@@ -55,6 +55,8 @@ impl<'l> Lexer<'l> {
           "trait",
           "nil",
           "switch",
+          "until",
+          "unless",
         ])
       )
     );

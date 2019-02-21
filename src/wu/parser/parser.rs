@@ -747,10 +747,22 @@ impl<'p> Parser<'p> {
             )
           },
 
-          "if" => {
+          c @ "if" | c @ "unless" => {
+            let is_notted = c == "unless";
+
             self.next()?;
 
-            let condition   = Rc::new(self.parse_expression()?);
+            let mut expression = self.parse_expression()?;
+            let position_expr  = expression.pos.clone();
+
+            if is_notted {
+              expression = Expression::new(
+                ExpressionNode::Not(Rc::new(expression)),
+                position_expr
+              )
+            }
+
+            let condition   = Rc::new(expression);
             let if_position = self.span_from(position.clone());
 
             let body        = Rc::new(
@@ -801,12 +813,22 @@ impl<'p> Parser<'p> {
             )
           },
 
-          "while" => {
+          c @ "while" | c @ "until" => {
+            let is_notted = c == "until";
+
             self.next()?;
 
             self.next_newline()?;
 
-            let condition = self.parse_expression()?;
+            let mut condition = self.parse_expression()?;
+            let position_expr  = condition.pos.clone();
+
+            if is_notted {
+              condition = Expression::new(
+                ExpressionNode::Not(Rc::new(condition)),
+                position_expr
+              )
+            }
 
             self.next_newline()?;
 

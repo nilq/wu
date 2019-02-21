@@ -1,0 +1,9 @@
+a := true
+
+unless not a {
+  a = false
+}
+
+until a {
+  a = true
+}
